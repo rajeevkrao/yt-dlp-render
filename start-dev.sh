@@ -7,11 +7,11 @@ echo "🚀 Starting YouTube Video Downloader (Development Mode)..."
 # Create necessary directories
 mkdir -p logs/nginx logs/app data/postgres data/redis data/elasticsearch data/minio
 
-# Start development services
-sudo docker-compose -f docker-compose.dev.yml up -d
+sudo docker-compose -f docker-compose.dev.yml down
 
-echo "⏳ Waiting for services to start..."
-sleep 30
+# Start development services
+sudo docker-compose -f docker-compose.dev.yml build
+sudo docker-compose -f docker-compose.dev.yml up -d
 
 # Show running containers
 sudo docker-compose -f docker-compose.dev.yml ps
