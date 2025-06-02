@@ -1,0 +1,375 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <h1 class="hero-title">Free YouTube Video Downloader</h1>
+                <p class="hero-subtitle">
+                    Download YouTube videos in high quality. Fast, secure, and completely free!
+                </p>
+
+                <!-- Download Form -->
+                <div class="download-form">
+                    <form id="downloadForm">
+                        <div class="row g-3">
+                            <div class="col-lg-8">
+                                <input type="url" class="form-control" id="videoUrl"
+                                    placeholder="Paste YouTube video URL here..." required>
+                            </div>
+                            <div class="col-lg-4">
+                                <button type="submit" class="btn btn-primary w-100" id="getInfoBtn">
+                                    <i class="fas fa-search me-2"></i>Get Video Info
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Loading Spinner -->
+                    <div id="loadingSpinner" class="text-center mt-3 d-none">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-2">Fetching video information...</p>
+                    </div>
+
+                    <!-- Video Info Display -->
+                    <div id="videoInfo" class="mt-4 d-none">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <img id="videoThumbnail" class="img-fluid rounded" alt="Video Thumbnail">
+                            </div>
+                            <div class="col-md-8">
+                                <h4 id="videoTitle" class="mb-3"></h4>
+                                <div class="video-meta mb-3">
+                                    <p><strong>Channel:</strong> <span id="videoUploader"></span></p>
+                                    <p><strong>Duration:</strong> <span id="videoDuration"></span></p>
+                                    <p><strong>Views:</strong> <span id="videoViews"></span></p>
+                                </div>
+
+                                <!-- Format Selection -->
+                                <div class="mb-3">
+                                    <label for="formatSelect" class="form-label"><strong>Select
+                                            Quality:</strong></label>
+                                    <select class="form-select" id="formatSelect">
+                                        <option value="">Best Quality (MP4)</option>
+                                    </select>
+                                </div>
+
+                                {% if session.user_id %}
+                                <button type="button" class="btn btn-danger btn-lg" id="downloadBtn">
+                                    <i class="fas fa-download me-2"></i>Download Video
+                                </button>
+                                {% else %}
+                                <div class="alert alert-warning">
+                                    <strong>Please <a href="{{ url_for('login') }}" class="alert-link">login</a> or
+                                        <a href="{{ url_for('register') }}" class="alert-link">register</a> to download
+                                        videos.</strong>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Download Progress -->
+                    <div id="downloadProgress" class="mt-4 d-none">
+                        <div class="text-center">
+                            <div class="spinner-border text-danger mb-3" role="status">
+                                <span class="visually-hidden">Downloading...</span>
+                            </div>
+                            <h5>Downloading Video...</h5>
+                            <p>Please wait while we process your video. This may take a few minutes.</p>
+                        </div>
+                    </div>
+
+                    <!-- Download Complete -->
+                    <div id="downloadComplete" class="mt-4 d-none">
+                        <div class="alert alert-success text-center">
+                            <h5><i class="fas fa-check-circle me-2"></i>Download Complete!</h5>
+                            <p>Your video has been processed and is ready for download.</p>
+                            <a id="downloadLink" href="#" class="btn btn-success btn-lg">
+                                <i class="fas fa-download me-2"></i>Download Now
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold mb-3">Why Choose Our YouTube Downloader?</h2>
+                <p class="lead text-muted">Experience the best way to download YouTube videos</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <h4>Lightning Fast</h4>
+                    <p>Download videos at maximum speed with our optimized servers and advanced compression technology.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-hd-video"></i>
+                    </div>
+                    <h4>High Quality</h4>
+                    <p>Choose from multiple quality options including HD, Full HD, and 4K resolutions for the best
+                        viewing experience.</p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>100% Secure</h4>
+                    <p>Your privacy is our priority. We use secure connections and don't store your personal data.</p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h4>Mobile Friendly</h4>
+                    <p>Works perfectly on all devices - desktop, tablet, and mobile. Download anywhere, anytime.</p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <h4>Completely Free</h4>
+                    <p>No hidden fees, no subscriptions. Download unlimited videos absolutely free forever.</p>
+                </div>
+            </div>
+
+            <div class="col-lg-4 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <h4>30-Day Storage</h4>
+                    <p>Register an account to store your downloads for 30 days and access them from any device.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How to Use Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center mb-5">
+            <div class="col-12">
+                <h2 class="display-5 fw-bold mb-3">How to Download YouTube Videos</h2>
+                <p class="lead text-muted">Simple 3-step process to download any YouTube video</p>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-4 text-center">
+                <div class="mb-4">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center"
+                        style="width: 80px; height: 80px;">
+                        <span class="h2 mb-0">1</span>
+                    </div>
+                </div>
+                <h4>Copy Video URL</h4>
+                <p>Go to YouTube, find your video, and copy the URL from the address bar or share button.</p>
+            </div>
+
+            <div class="col-lg-4 text-center">
+                <div class="mb-4">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center"
+                        style="width: 80px; height: 80px;">
+                        <span class="h2 mb-0">2</span>
+                    </div>
+                </div>
+                <h4>Paste & Get Info</h4>
+                <p>Paste the URL in our form above and click "Get Video Info" to see available download options.</p>
+            </div>
+
+            <div class="col-lg-4 text-center">
+                <div class="mb-4">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center"
+                        style="width: 80px; height: 80px;">
+                        <span class="h2 mb-0">3</span>
+                    </div>
+                </div>
+                <h4>Download Video</h4>
+                <p>Choose your preferred quality and click download. Your video will be ready in seconds!</p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('downloadForm');
+        const urlInput = document.getElementById('videoUrl');
+        const getInfoBtn = document.getElementById('getInfoBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const videoInfo = document.getElementById('videoInfo');
+        const downloadProgress = document.getElementById('downloadProgress');
+        const downloadComplete = document.getElementById('downloadComplete');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const formatSelect = document.getElementById('formatSelect');
+
+        let currentVideoData = null;
+
+        // Get video info
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const url = urlInput.value.trim();
+            if (!url) return;
+
+            // Reset displays
+            videoInfo.classList.add('d-none');
+            downloadProgress.classList.add('d-none');
+            downloadComplete.classList.add('d-none');
+            loadingSpinner.classList.remove('d-none');
+            getInfoBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/video-info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to get video info');
+                }
+
+                currentVideoData = { ...data, url: url };
+                displayVideoInfo(data);
+
+                // Track video info request
+                if (typeof trackVideoInfo !== 'undefined') {
+                    trackVideoInfo(data.title);
+                }
+
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                loadingSpinner.classList.add('d-none');
+                getInfoBtn.disabled = false;
+            }
+        });
+
+        // Download video
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', async function () {
+                if (!currentVideoData) return;
+
+                videoInfo.classList.add('d-none');
+                downloadProgress.classList.remove('d-none');
+
+                try {
+                    const response = await fetch('/api/download', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            url: currentVideoData.url,
+                            format_id: formatSelect.value || null
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Download failed');
+                    }
+
+                    // Show download complete
+                    downloadProgress.classList.add('d-none');
+                    downloadComplete.classList.remove('d-none');
+
+                    const downloadLink = document.getElementById('downloadLink');
+                    downloadLink.href = data.download_url;
+                    downloadLink.download = data.file_name;
+
+                    // Track download
+                    if (typeof trackDownload !== 'undefined') {
+                        trackDownload(currentVideoData.title, formatSelect.value || 'best');
+                    }
+
+                } catch (error) {
+                    downloadProgress.classList.add('d-none');
+                    alert('Download error: ' + error.message);
+                    videoInfo.classList.remove('d-none');
+                }
+            });
+        }
+
+        function displayVideoInfo(data) {
+            document.getElementById('videoThumbnail').src = data.thumbnail || '';
+            document.getElementById('videoTitle').textContent = data.title || 'Unknown Title';
+            document.getElementById('videoUploader').textContent = data.uploader || 'Unknown';
+            document.getElementById('videoDuration').textContent = formatDuration(data.duration);
+            document.getElementById('videoViews').textContent = formatNumber(data.view_count);
+
+            // Populate format options
+            formatSelect.innerHTML = '<option value="">Best Quality (MP4)</option>';
+            if (data.formats && data.formats.length > 0) {
+                data.formats.forEach(format => {
+                    if (format.height && format.ext) {
+                        const option = document.createElement('option');
+                        option.value = format.format_id;
+                        option.textContent = `${format.height}p (${format.ext.toUpperCase()})`;
+                        formatSelect.appendChild(option);
+                    }
+                });
+            }
+
+            videoInfo.classList.remove('d-none');
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return 'Unknown';
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+
+            if (hours > 0) {
+                return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function formatNumber(num) {
+            if (!num) return '0';
+            return num.toLocaleString();
+        }
+    });
+</script>
+{% endblock %}

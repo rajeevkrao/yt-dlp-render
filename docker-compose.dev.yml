@@ -1,0 +1,123 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: ytdl_app_dev
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    depends_on:
+      - postgres
+      - redis
+      - elasticsearch
+      - minio
+    environment:
+      - SECRET_KEY=dev-secret-key
+      - DEBUG=True
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=ytdl_app_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - REDIS_URL=redis://redis:6379/0
+      - ELASTICSEARCH_HOST=elasticsearch
+      - ELASTICSEARCH_PORT=9200
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET=video-downloads-dev
+      - MINIO_SECURE=false
+      - GA_TRACKING_ID=G-XXXXXXXXXX
+      - VIDEO_EXPIRY_DAYS=7
+      - MAX_VIDEO_SIZE=1000
+    volumes:
+      - .:/app
+      - ./logs/app:/app/logs
+    networks:
+      - ytdl_network
+    command: ["python", "app.py"]
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: ytdl_postgres_dev
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ytdl_app_dev
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - ytdl_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: ytdl_redis_dev
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_dev_data:/data
+    networks:
+      - ytdl_network
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.0
+    container_name: ytdl_elasticsearch_dev
+    restart: unless-stopped
+    ports:
+      - "9200:9200"
+    environment:
+      - node.name=elasticsearch
+      - cluster.name=ytdl-dev-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms256m -Xmx256m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - elasticsearch_dev_data:/usr/share/elasticsearch/data
+    networks:
+      - ytdl_network
+
+  minio:
+    image: minio/minio:latest
+    container_name: ytdl_minio_dev
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_dev_data:/data
+    networks:
+      - ytdl_network
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.0
+    container_name: ytdl_kibana_dev
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: "http://elasticsearch:9200"
+    networks:
+      - ytdl_network
+
+volumes:
+  postgres_dev_data:
+  redis_dev_data:
+  elasticsearch_dev_data:
+  minio_dev_data:
+
+networks:
+  ytdl_network:
+    driver: bridge
