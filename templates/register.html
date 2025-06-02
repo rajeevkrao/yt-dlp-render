@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Register - YouTube Video Downloader{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6 col-md-8">
+                <div class="card shadow-lg border-0 rounded-lg">
+                    <div class="card-header bg-primary text-white text-center py-4">
+                        <h3 class="mb-0"><i class="fas fa-user-plus me-2"></i>Create Account</h3>
+                        <p class="mb-0">Join thousands of users downloading videos</p>
+                    </div>
+                    <div class="card-body p-5">
+                        <form method="POST" id="registerForm">
+                            <div class="row">
+                                <div class="col-md-12 mb-4">
+                                    <label for="username" class="form-label">Username</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" id="username" name="username"
+                                            placeholder="Choose a username" minlength="3" maxlength="50" required>
+                                    </div>
+                                    <div class="form-text">3-50 characters, letters and numbers only</div>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="email" class="form-label">Email Address</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    <input type="email" class="form-control" id="email" name="email"
+                                        placeholder="Enter your email" required>
+                                </div>
+                                <div class="form-text">We'll never share your email with anyone else</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" class="form-control" id="password" name="password"
+                                        placeholder="Create a strong password" minlength="6" required>
+                                </div>
+                                <div class="form-text">Minimum 6 characters</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" class="form-control" id="confirmPassword"
+                                        name="confirmPassword" placeholder="Confirm your password" required>
+                                </div>
+                                <div id="passwordError" class="text-danger small d-none">
+                                    Passwords do not match
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="terms" required>
+                                    <label class="form-check-label" for="terms">
+                                        I agree to the <a href="#" class="text-decoration-none">Terms of Service</a>
+                                        and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                                    <i class="fas fa-user-plus me-2"></i>Create Account
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="text-center mt-4">
+                            <h6>Why create an account?</h6>
+                            <div class="row text-center mt-3">
+                                <div class="col-4">
+                                    <i class="fas fa-cloud text-primary fa-2x mb-2"></i>
+                                    <p class="small">Store downloads for 30 days</p>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-history text-primary fa-2x mb-2"></i>
+                                    <p class="small">Download history</p>
+                                </div>
+                                <div class="col-4">
+                                    <i class="fas fa-mobile-alt text-primary fa-2x mb-2"></i>
+                                    <p class="small">Access from any device</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer text-center py-3">
+                        <div class="small">
+                            Already have an account?
+                            <a href="{{ url_for('login') }}" class="text-decoration-none">Login here</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('registerForm');
+        const password = document.getElementById('password');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const passwordError = document.getElementById('passwordError');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function validatePasswords() {
+            if (password.value && confirmPassword.value) {
+                if (password.value !== confirmPassword.value) {
+                    passwordError.classList.remove('d-none');
+                    submitBtn.disabled = true;
+                    return false;
+                } else {
+                    passwordError.classList.add('d-none');
+                    submitBtn.disabled = false;
+                    return true;
+                }
+            }
+            return true;
+        }
+
+        password.addEventListener('input', validatePasswords);
+        confirmPassword.addEventListener('input', validatePasswords);
+
+        form.addEventListener('submit', function (e) {
+            if (!validatePasswords()) {
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}
