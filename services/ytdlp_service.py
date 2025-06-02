@@ -157,38 +157,47 @@ class YTDLPService:
                 pass
             raise Exception(f"Download failed: {str(e)}")
     
-    def get_user_videos(self, user_id, page=1, size=10):
-        """Get user's downloaded videos"""
+    def get_user_videos(self, user_id, page=1, size=10, search_query=None):
+        """Get user's downloaded videos, optionally filtered by search_query"""
         try:
+            must_clauses = [
+                {"term": {"user_id": user_id}},
+                {"range": {"expiry_date": {"gte": datetime.now().isoformat()}}}
+            ]
+            if search_query:
+                must_clauses.append({
+                    "multi_match": {
+                        "query": search_query,
+                        "fields": ["title", "description", "uploader"]
+                    }
+                })
+
             query = {
                 "query": {
                     "bool": {
-                        "must": [
-                            {"term": {"user_id": user_id}},
-                            {"range": {"expiry_date": {"gte": datetime.now().isoformat()}}}
-                        ]
+                        "must": must_clauses
                     }
                 },
                 "sort": [{"download_date": {"order": "desc"}}],
                 "from": (page - 1) * size,
                 "size": size
             }
-            
+
             result = self.es.search(index='video_downloads', body=query)
-            
+
             videos = []
             for hit in result['hits']['hits']:
                 video = hit['_source']
                 video['id'] = hit['_id']
                 videos.append(video)
-            
+
             return {
                 'videos': videos,
                 'total': result['hits']['total']['value'],
                 'page': page,
                 'pages': (result['hits']['total']['value'] + size - 1) // size
             }
-            
+
         except Exception as e:
             raise Exception(f"Failed to retrieve videos: {str(e)}")
     

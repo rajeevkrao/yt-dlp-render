@@ -53,9 +53,17 @@ def days_until_expiry(expiry_date_string):
     except:
         return 0
 
+def format_number(value):
+    """Format number with commas as thousands separators"""
+    try:
+        return "{:,}".format(int(value))
+    except (ValueError, TypeError):
+        return value
+
 def register_template_filters(app):
     """Register custom template filters with Flask app"""
     app.jinja_env.filters['format_duration'] = format_duration
     app.jinja_env.filters['format_date'] = format_date
     app.jinja_env.filters['format_size'] = format_size
     app.jinja_env.filters['days_until_expiry'] = days_until_expiry
+    app.jinja_env.filters['format_number'] = format_number

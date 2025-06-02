@@ -19,7 +19,7 @@ services:
       - POSTGRES_PORT=5432
       - POSTGRES_DB=ytdl_app_dev
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=password
       - REDIS_URL=redis://redis:6379/0
       - ELASTICSEARCH_HOST=elasticsearch
       - ELASTICSEARCH_PORT=9200
@@ -30,7 +30,7 @@ services:
       - MINIO_SECURE=false
       - GA_TRACKING_ID=G-XXXXXXXXXX
       - VIDEO_EXPIRY_DAYS=7
-      - MAX_VIDEO_SIZE=100
+      - MAX_VIDEO_SIZE=1000
     volumes:
       - .:/app
       - ./logs/app:/app/logs
